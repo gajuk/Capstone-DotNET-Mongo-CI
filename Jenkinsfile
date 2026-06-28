@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main', credentialsId: 'git-token', url: 'https://github.com/jaiswaladi246/Capstone-DotNET-Mongo-CI.git'
+                git branch: 'master', credentialsId: 'git-token', url: 'https://github.com/gajuk/Capstone-DotNET-Mongo-CI.git'
             }
         }
         stage('Gitleaks Scan') {
@@ -35,8 +35,8 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=NoteApp \
-                            -Dsonar.projectKey=NoteApp '''
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=noteApp \
+                            -Dsonar.projectKey=noteApp '''
                 }
             }
         }
@@ -53,7 +53,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred') {
-                        sh "docker build -t adijaiswal/noteapp:$IMAGE_TAG ."
+                        sh "docker build -t gaju8734/noteapp:$IMAGE_TAG ."
                     }
                 }
             }
@@ -61,7 +61,7 @@ pipeline {
         
         stage('trivy Image Scan') {
             steps {
-              sh 'trivy image --format table -o trivy-image-report.html adijaiswal/noteapp:$IMAGE_TAG'
+              sh 'trivy image --format table -o trivy-image-report.html gaju8734/noteapp:$IMAGE_TAG'
             }
         }
         
@@ -69,7 +69,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred') {
-                        sh "docker push adijaiswal/noteapp:$IMAGE_TAG"
+                        sh "docker push gaju8734/noteapp:$IMAGE_TAG"
                     }
                 }
             }
@@ -81,11 +81,11 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'git-token', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                         sh '''
                             # Clone the CD Repo
-                            git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/jaiswaladi246/Capstone-DotNET-Mongo-CD.git
+                            git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/gajuk/Capstone-DotNET-Mongo-CD.git
                             
                             # Update the tag in manifest
                             cd Capstone-DotNET-Mongo-CD
-                            sed -i "s|adijaiswal/noteapp:.*|adijaiswal/noteapp:${IMAGE_TAG}|" Manifest/manifest.yaml
+                            sed -i "s|gaju8734/noteapp:.*|gaju8734/noteapp:${IMAGE_TAG}|" Manifest/manifest.yaml
                             
                             # Confirm Changes
                             echo "Updated manifest file contents:"
@@ -96,7 +96,7 @@ pipeline {
                             git config user.email "jenkins@example.com"
                             git add Manifest/manifest.yaml
                             git commit -m "Update image tag to ${IMAGE_TAG}"
-                            git push origin main
+                            git push origin master
                         '''
                     }
                     
@@ -129,9 +129,9 @@ pipeline {
             emailext (
                 subject: "${jobName} - Build ${buildNumber} - ${pipelineStatus.toUpperCase()}",
                 body: body,
-                to: '567adddi.jais@gmail.com',
-                from: 'jaiswaladi246@gmail.com',
-                replyTo: 'jenkins@devopsshack.com',
+                to: 'gajanankotpelliwar@gmail.com',
+                from: 'gajanankotpelliwar@gmail.com',
+                replyTo: 'gajanankotpelliwar@gmail.com',
                 mimeType: 'text/html',
                
             )
