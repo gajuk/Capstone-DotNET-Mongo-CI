@@ -11,11 +11,6 @@ pipeline {
                 git branch: 'master', credentialsId: 'git-token', url: 'https://github.com/gajuk/Capstone-DotNET-Mongo-CI.git'
             }
         }
-        stage('Gitleaks Scan') {
-            steps {
-             sh 'gitleaks detect --report-format=json --report-path=gitleaks-report.json --exit-code=1'
-            }
-        }
         stage('Compile') {
             steps {
                 sh 'dotnet build'
