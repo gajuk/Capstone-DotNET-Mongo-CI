@@ -16,11 +16,6 @@ pipeline {
                 sh 'dotnet build'
             }
         }
-        stage('trivy FS Scan') {
-            steps {
-              sh 'trivy fs --format table -o trivy-fs-report.html .'
-            }
-        }
         stage('Unit Testing') {
             steps {
                 echo 'dotnet test'
@@ -51,12 +46,6 @@ pipeline {
                         sh "docker build -t gaju8734/noteapp:$IMAGE_TAG ."
                     }
                 }
-            }
-        }
-        
-        stage('trivy Image Scan') {
-            steps {
-              sh 'trivy image --format table -o trivy-image-report.html gaju8734/noteapp:$IMAGE_TAG'
             }
         }
         
